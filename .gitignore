@@ -1,0 +1,24 @@
+# commit and push script
+addCommitPush.sh
+
+# rproj
+lsm_analysis.Rproj
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.Rproj.user
+.Rhistory
+.Rdata
+
+# folders
+/data
+/igv
+/reports
+/results
