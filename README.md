@@ -1,1 +1,1 @@
-# lsm_analysis
+# Analysis, parsing and plotting of SmAP1
