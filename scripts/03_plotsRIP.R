@@ -7,21 +7,35 @@
 # analysis by type of feature
 
 # starts here ####
+
+# creating plots directory
+if(!dir.exists("plots")){dir.create("plots")}
+
+# declaring plots object
+plots = list()
+
 # GC comparison ####
 # getting GC distributions for those
 # features binding to LSm vs non binding
 # wilcoxon unpaired two sample test
 # alt name: Mann–Whitney U test
-nrtx %>% 
+plots$gccomp = nrtx %>% 
   ggplot(aes(y = GC,
              x = LSmInteraction)) +
   geom_boxplot(outlier.shape = NA) + 
   geom_quasirandom(size = 0.5,
-                alpha = 0.2) +
+                   alpha = 0.2) +
   stat_compare_means(method = "wilcox.test",
                      mapping = aes(label = ..p.signif..),
                      label.x = 1.5) +
   xlab(label = "Interação com SmAP1")
+
+ggsave(filename = "plots/gccomp.png",
+       plot = plots$gccomp,
+       height = 4,
+       width = 3,
+       unit = "in",
+       dpi = 300)
 
 # contingency table and phyper test ####
 # graphical representation of a contingency table
@@ -30,11 +44,11 @@ contTbl = nrtx %>%
            geneClass) %>% 
   summarize(count = sum(n()))
 
-contTbl %>% 
+plots$contTbl = contTbl %>% 
   ggplot(aes(x = LSmInteraction,
              y = geneClass,
              label = count
-             )) +
+  )) +
   geom_point(size = 20,
              colour = "black",
              shape = 21,
@@ -42,6 +56,13 @@ contTbl %>%
   geom_text(size = 5) +
   xlab("Interação com SmAP1") +
   ylab("Classe")
+
+ggsave(filename = "plots/contTbl.png",
+       plot = plots$contTbl,
+       height = 3,
+       width = 3.5,
+       unit = "in",
+       dpi = 300)
 
 # hypergeometric test
 # rationale from

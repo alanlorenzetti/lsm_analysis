@@ -171,6 +171,14 @@ nrtx = nrtx %>%
 write_tsv(x = nrtx,
           file = "results/interactionListNRTX.tsv")
 
+write.xlsx(x = nrtx %>% 
+             select(representative,
+                    product,
+                    locus_tag,
+                    LSmInteraction,
+                    LSmInteractionAS),
+           file = "results/interactionListNRTX_basic.xlsx")
+
 # parsing IS dataframe ####
 # in order to classify
 # each non redundant ORF according

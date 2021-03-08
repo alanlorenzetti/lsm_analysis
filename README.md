@@ -1,1 +1,1 @@
-# Analysis, parsing and plotting of SmAP1
+# Analysis, parsing, and plotting of SmAP1
