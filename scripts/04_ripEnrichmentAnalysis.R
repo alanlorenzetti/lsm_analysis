@@ -77,5 +77,5 @@ for(j in inputobj$LSmInteraction %>% unique()){
 
 # correcting pvalues using BH method
 # filtering by pval
-enrich$qval = p.adjust(enrich$pval)
+enrich$qval = p.adjust(enrich$pval, method = "BH")
 enrich = enrich[enrich$qval < qthr,]
