@@ -18,8 +18,8 @@ packs = c(
   "ggpubr",
   "ggbeeswarm",
   "gtools",
-  "openxlsx",
-  "eulerr"
+  "eulerr",
+  "ggthemes"
 )
 
 # loading

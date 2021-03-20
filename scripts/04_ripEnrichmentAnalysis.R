@@ -79,3 +79,63 @@ for(j in inputobj$LSmInteraction %>% unique()){
 # filtering by pval
 enrich$qval = p.adjust(enrich$pval, method = "BH")
 enrich = enrich[enrich$qval < qthr,]
+
+# plotting counts of categories with enrichment score
+cogEnrichPlot = nrtxcog %>%
+  filter(LSmInteraction == "Sim") %>%
+  group_by(cog_category) %>% 
+  summarise(count = n()) %>%
+  left_join(x = .,
+            y = enrich %>%
+              filter(regRule == "Sim"),
+            by = c("cog_category" = "level")) %>%
+  mutate(enrichStatus = case_when(is.na(qval) ~ NA_character_,
+                                  TRUE ~ "*"),
+         cog_category = factor(cog_category, levels = rev(cog_category)),
+         size = case_when(count <= 30 ~ "Menos que 30 obsevações",
+                          TRUE ~ "Mais que 30 observações")) %>% 
+  mutate(size = factor(size, levels = size %>% unique())) %>% 
+  ggplot(aes(x = count,
+             y = cog_category)) +
+  geom_col(fill = "white", col = "black") +
+  geom_text(aes(label = enrichStatus),
+            vjust = 0.75) +
+  facet_wrap(~ size,
+             scales = "free_x",
+  ) + 
+  xlab("Observações") + 
+  ylab("Categoria do COG")  +
+  theme(text = element_text(colour = "black"),
+        axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour = "black"),
+        legend.position = "bottom")
+
+# plotting another version of contingency table
+# to place besides the enrichement chart
+tnpVsBackPlot = contTbl %>% 
+  ggplot(aes(x = count,
+             y = geneClass,
+             fill = LSmInteraction,
+             label = count)) +
+  geom_col(position = "fill") +
+  geom_text(position = position_fill(vjust = 0.5)) +
+  scale_fill_tableau(name = "Interação SmAP1") +
+  ylab("Classe") +
+  xlab("Frequência Relativa") +
+  theme(legend.position = "bottom")
+
+# arranging plots
+panelEnrichRelFreq = ggarrange(plotlist = list(cogEnrichPlot,
+                                               tnpVsBackPlot),
+                               ncol = 1,
+                               nrow = 2,
+                               labels = "AUTO",
+                               heights = c(1, 0.5))
+
+# saving
+ggsave(filename = "plots/panelEnrichAndRelFreq.png",
+       plot = panelEnrichRelFreq,
+       dpi = 300,
+       unit = "in",
+       height = 6,
+       width = 7)
