@@ -16,6 +16,12 @@ if(!dir.exists("results")){dir.create("results")}
 # halo non redundant transcriptome
 nrtx = read_tsv("https://alanlorenzetti.github.io/halo_nr_tx/data/dictionary.tsv")
 
+# creating alternative version with expanded
+# alternative locus_tags
+nrtxExp = nrtx %>% 
+  dplyr::select(representative, locus_tag) %>% 
+  separate_rows(locus_tag, sep = ",")
+
 # loading and parsing halo annotation
 annot = rtracklayer::import("data/Hsalinarum-gene-annotation-pfeiffer2019.gff3")
 genes = subset(annot, type == "gene" | type == "pseudogene")
@@ -206,3 +212,29 @@ results = tibble(IS = isannot$mobile_element_type[ishits$subjectHits] %>%
                    str_replace(., ".*:", ""),
                  locus_tag = ltlsm$locus_tags[ishits$queryHits])
 results = results[mixedorder(results$IS),]
+
+# adding LPI (Lineage Probability Index) as a measure
+# of horizontal transfer
+# indexes were taken from DarkHorseDB 
+# http://darkhorse.ucsd.edu/
+# https://link.springer.com/article/10.1186/gb-2007-8-2-r16
+# loading table and parsing
+# to match our locus_tags
+# then merging and computing average LPI
+# for genes sharing a representative locus_tag
+lpi = read_tsv(file = "data/darkHorseDbHsalinarum.tab") %>% 
+  mutate(locus_tag = str_replace(locus_tag, "VNG7", "VNG_7"),
+         locus_tag = str_replace(locus_tag, "m$", "")) %>% 
+  dplyr::select(locus_tag, norm_lpi) %>% 
+  left_join(x = nrtxExp,
+            y = .,
+            by = "locus_tag") %>% 
+  filter(!is.na(norm_lpi)) %>% 
+  group_by(representative) %>% 
+  summarise(norm_lpi = mean(norm_lpi))
+
+# adding LPI to nrtx object
+nrtx = nrtx %>% 
+  left_join(x = .,
+            y = lpi,
+            by = "representative") 

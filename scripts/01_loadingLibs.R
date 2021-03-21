@@ -19,7 +19,9 @@ packs = c(
   "ggbeeswarm",
   "gtools",
   "eulerr",
-  "ggthemes"
+  "ggthemes",
+  "tm",
+  "ggwordcloud"
 )
 
 # loading

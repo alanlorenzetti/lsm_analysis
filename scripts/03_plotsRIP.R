@@ -37,6 +37,23 @@ ggsave(filename = "plots/gccomp.png",
        unit = "in",
        dpi = 300)
 
+# LPI comparison ####
+# plots$lpi = nrtx %>% 
+#   ggplot(aes(x = norm_lpi)) +
+#   geom_histogram() + 
+#   facet_wrap(~ LSmInteraction)
+# 
+# nrtx %>% 
+#   ggplot(aes(y = norm_lpi,
+#              x = LSmInteraction)) +
+# geom_boxplot(outlier.shape = NA) + 
+#   geom_quasirandom(size = 0.5,
+#                    alpha = 0.2) +
+#   stat_compare_means(method = "wilcox.test",
+#                      mapping = aes(label = ..p.signif..),
+#                      label.x = 1.5) +
+#   xlab(label = "Interação com SmAP1")
+
 # contingency table and phyper test ####
 # graphical representation of a contingency table
 contTbl = nrtx %>% 
