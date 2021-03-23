@@ -171,17 +171,31 @@ prodsTxt = Corpus(VectorSource(prodsTxt))
 termM = TermDocumentMatrix(x = prodsTxt)
 termM = termM %>% as.matrix()
 termdf = tibble(word = names(rowSums(termM)),
-                    freq = rowSums(termM))  
-  
-# plotting wordcloud
-col = ggthemes_data$tableau$`color-palettes`$regular$`Tableau 10`
-wc = termdf %>% 
+                freq = rowSums(termM)) %>% 
   filter(freq >= 10) %>% 
-  ggplot(aes(label = word,
-             size = freq)) +
-  geom_text_wordcloud() +
-  scale_size_area(max_size = 12) +
-  theme_minimal()
+  arrange(freq) %>% 
+  mutate(word = factor(word, levels = word))
+
+# plotting wordcloud
+# col = ggthemes_data$tableau$`color-palettes`$regular$`Tableau 10`
+# wc = termdf %>% 
+#   filter(freq >= 10) %>% 
+#   ggplot(aes(label = word,
+#              size = freq)) +
+#   geom_text_wordcloud() +
+#   scale_size_area(max_size = 12) +
+#   theme_minimal()
+
+wc = termdf %>% 
+  filter(freq >= 20) %>% 
+  arrange() %>% 
+  ggplot(aes(y = word,
+             x = freq)) +
+  geom_col(fill = "white",
+           color = "black",
+           size = 0.25) +
+  xlab("Frequência") +
+  ylab("Termo")
 
 # comparing means
 compar = list(c("Não definida", "Outra"),
@@ -212,9 +226,21 @@ wcGCclassespanel = ggarrange(plotlist = list(wc,
                              widths = c(1, 0.8))
 
 # saving
-ggsave(filename = "plots/wordCloud_GCclasses_panel.png",
+ggsave(filename = "plots/termFreq_GCclasses_panel.png",
        plot = wcGCclassespanel,
        dpi = 300,
        unit = "in",
        width = 7,
        height = 4)
+
+# contingency table for lpi
+# nrtxcog %>%
+#   mutate(lpiStatus = case_when(norm_lpi >= 0.5 ~ "lpi >= 0.5",
+#                                norm_lpi < 0.5 ~ "lpi < 0.5",
+#                                TRUE ~ NA_character_)) %>% 
+#   group_by(LSmInteraction, lpiStatus) %>% 
+#   summarise(count = n()) %>% 
+#   drop_na()
+# 
+# phyper(q= wb, m= wu, n= bu, k = drawn, lower.tail = F)
+# phyper(q= 16, m= 82, n= 1724, k = 227, lower.tail = F)
