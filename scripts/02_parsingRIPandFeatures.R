@@ -1,8 +1,8 @@
 # alorenzetti 20210211
 
 # description ####
-# this script will load files
-# cross lsm results and 
+# this script will load files,
+# get smap1 interaction results, and 
 # and plot charts
 
 # start analysis ####
@@ -148,7 +148,8 @@ nrtx = nrtx %>%
             by = "representative") %>% 
   mutate(LSmInteractionAS = case_when(is.na(LSmInteractionAS) ~ "Não",
                                     TRUE ~ as.character(LSmInteractionAS)),
-         geneClass = case_when(str_detect(product, "ISH|transposase") ~ "Transposase",
+         geneClass = case_when(str_detect(product, "ISH|transposase") & 
+                                 str_detect(product, "nonfunc", negate = T) ~ "Transposase",
                                TRUE ~ "Outra"))
   
 # adding GC of transcriptional units ####
@@ -177,13 +178,13 @@ nrtx = nrtx %>%
 write_tsv(x = nrtx,
           file = "results/interactionListNRTX.tsv")
 
-write.xlsx(x = nrtx %>% 
-             select(representative,
-                    product,
-                    locus_tag,
-                    LSmInteraction,
-                    LSmInteractionAS),
-           file = "results/interactionListNRTX_basic.xlsx")
+write_tsv(x = nrtx %>% 
+            select(representative,
+                   product,
+                   locus_tag,
+                   LSmInteraction,
+                   LSmInteractionAS),
+          file = "results/interactionListNRTX_basic.tsv")
 
 # parsing IS dataframe ####
 # in order to classify
@@ -202,15 +203,15 @@ ltlsm[["locus_tags"]] = nrtx %>%
 # subsetting from gene annot dataset
 ltlsm[["annot"]] = genes[genes$locus_tag %in% ltlsm$locus_tags,]
 
-ishits = findOverlaps(query = ltlsm$annot,
-                      subject = isannot,
-                      ignore.strand = T,
-                      minoverlap = 50) %>% 
+ishits = GenomicRanges::findOverlaps(query = ltlsm$annot,
+                                     subject = isannot,
+                                     ignore.strand = T,
+                                     minoverlap = 50) %>% 
   as_tibble()
 
 results = tibble(IS = isannot$mobile_element_type[ishits$subjectHits] %>% 
                    str_replace(., ".*:", ""),
-                 locus_tag = ltlsm$locus_tags[ishits$queryHits])
+                 locus_tag = ltlsm$annot[ishits$queryHits] %>% names())
 results = results[mixedorder(results$IS),]
 
 # adding LPI (Lineage Probability Index) as a measure

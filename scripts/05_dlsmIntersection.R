@@ -25,9 +25,13 @@ deres[["dfsig_locus_tags"]] = deres$dfsig %>%
 intersec = df$locus_tags_representative[df$locus_tags_representative %in% deres$dfsig_locus_tags]
 
 # view intersection results in DE table
-# deres$dfsig %>%
-#   filter(deres$dfsig$locus_tag %in% intersec) %>% 
-#   view()
+deres$dfsig %>%
+  filter(deres$dfsig$locus_tag %in% intersec) %>% 
+  arrange(locus_tag) %>% 
+  select(locus_tag,
+         log2FoldChange,
+         pvalue,
+         product)
 
 plots$vennDiag$obj = venn(combinations = list(`Interação SmAP1` = df$locus_tags_representative,
                                               `Genes diferencialmente expressos` = deres$dfsig_locus_tags)) 

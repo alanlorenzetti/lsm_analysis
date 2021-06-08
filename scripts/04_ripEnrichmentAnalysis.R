@@ -234,13 +234,13 @@ ggsave(filename = "plots/termFreq_GCclasses_panel.png",
        height = 4)
 
 # contingency table for lpi
-# nrtxcog %>%
-#   mutate(lpiStatus = case_when(norm_lpi >= 0.5 ~ "lpi >= 0.5",
-#                                norm_lpi < 0.5 ~ "lpi < 0.5",
-#                                TRUE ~ NA_character_)) %>% 
-#   group_by(LSmInteraction, lpiStatus) %>% 
-#   summarise(count = n()) %>% 
-#   drop_na()
-# 
+nrtxcog %>%
+  mutate(lpiStatus = case_when(norm_lpi >= 0.5 ~ "lpi >= 0.5",
+                               norm_lpi < 0.5 ~ "lpi < 0.5",
+                               TRUE ~ NA_character_)) %>%
+  group_by(LSmInteraction, lpiStatus) %>%
+  summarise(count = n()) %>%
+  drop_na()
+ 
 # phyper(q= wb, m= wu, n= bu, k = drawn, lower.tail = F)
-# phyper(q= 16, m= 82, n= 1724, k = 227, lower.tail = F)
+phyper(q= 16, m= 82, n= 1724, k = 227, lower.tail = F)
